@@ -1,0 +1,28 @@
+version: "3.4"
+services:
+  task-manager:
+    env_file:
+      - .env
+    container_name: task-manager
+    image: task-manager-backend:latest
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: ${DOCKER_TARGET-production}
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "${PORT-7500}:${PORT-7500}"
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD-example}
+      MONGO_INITDB_DATABASE: ${MONGO_INITIAL_DB-tasks}
+    volumes:
+      - ./data:/data/db
